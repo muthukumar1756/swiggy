@@ -1,8 +1,8 @@
 ER
 
-![bookmyshow ER](https://github.com/user-attachments/assets/6f086ab6-26e5-44ba-bef0-1f1aa035f6a0)
+![swiggyER](https://github.com/user-attachments/assets/be1ac05d-ddb8-481f-8107-5c88d36847e1)
 
 
 UML
 
-![bookmyshow](https://github.com/user-attachments/assets/34632f29-d5f4-468b-b92f-84658c373872)
+![swiggy-uml](https://github.com/user-attachments/assets/29c58ddd-4d77-4781-ae73-ad0fdc66f28a)
