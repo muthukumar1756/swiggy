@@ -1,10 +1,10 @@
 package org.foodhub.user.controller;
 
+import org.foodhub.TestConfiguration;
 import org.foodhub.common.json.JsonElement;
 import org.foodhub.common.json.JsonFactory;
 import org.foodhub.user.model.user.User;
 import org.foodhub.user.service.UserService;
-import org.foodhub.user.service.internal.impl.UserServiceImpl;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,6 +13,15 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import org.mockito.Mockito;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * <p>
@@ -23,20 +32,17 @@ import org.mockito.Mockito;
  * @author Muthu kumar V
  * @version 1.0
  */
+@WebMvcTest(UserController.class)
+@ContextConfiguration(classes = TestConfiguration.class)
 final class UserControllerTest {
 
-    private static final String STATUS = "status";
-    private final UserController userController;
-    private final UserService userService;
-    private final JsonFactory jsonFactory;
+    @Autowired
+    private MockMvc mockMvc;
 
-    public UserControllerTest() {
-        jsonFactory = JsonFactory.getInstance();
-        userController = UserController.getInstance();
-        userService = Mockito.mock(UserServiceImpl.class);
+    @MockBean
+    private UserService userService;
 
-        userController.setUserService(userService);
-    }
+    private final JsonFactory jsonFactory = JsonFactory.getInstance();
 
     /**
      * <p>
@@ -45,18 +51,15 @@ final class UserControllerTest {
      */
     @ParameterizedTest
     @ValueSource(longs = {1, 50, 47})
-    void shouldReturnCorrectUserDetailsForGivenUserIds(final long userId) {
+    void shouldReturnCorrectUserDetailsForGivenUserIds(final long userId) throws Exception {
         final User user = new User.UserBuilder().setId(userId).build();
+        final byte[] expected = jsonFactory.createObjectNode().build(user).asBytes();
 
-        Mockito.when(userService.getUserById(userId)).thenReturn(jsonFactory.createObjectNode().build(user).asBytes());
-        final byte[] result = userController.getUserById(userId);
-        final JsonElement jsonElement = jsonFactory.asJsonArray(result);
+        Mockito.when(userService.getUserById(userId)).thenReturn(expected);
 
-        if (jsonElement.hasElement("id")) {
-            final String value = jsonElement.getValue("id");
-
-            Assertions.assertEquals(String.valueOf(userId), value);
-        }
+        mockMvc.perform(get("/user/{userId}", userId))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(expected));
     }
 
     /**
@@ -73,20 +76,18 @@ final class UserControllerTest {
             "Muthu kumar,muthukumar@gmail.com,9832178952,kumar,Enter a valid password"
     })
     void shouldValidateAndCreateUserProfileBasedOnInputData(final String name, final String emailId, final String phoneNumber,
-                                  final String password, final String expectedStatus) {
+                                  final String password, final String expectedStatus) throws Exception {
         final User user = new User.UserBuilder().setName(name).setEmailId(emailId).setPhoneNumber(phoneNumber)
                 .setPassword(password).build();
+        final byte[] expected = jsonFactory.createObjectNode().put("status", expectedStatus).asBytes();
 
-        Mockito.when(userService.createUserProfile(user)).thenReturn(jsonFactory.createObjectNode()
-                .put(STATUS, expectedStatus).asBytes());
-        final byte[] result = userController.createUserProfile(user);
-        final JsonElement jsonElement = jsonFactory.asJsonArray(result);
+        Mockito.when(userService.createUserProfile(user)).thenReturn(expected);
 
-        if (jsonElement.hasElement(STATUS)) {
-            final String value = jsonElement.getValue(STATUS);
-
-            Assertions.assertEquals(expectedStatus, value);
-        }
+        mockMvc.perform(post("/user")
+                        .contentType("application/json")
+                        .content(jsonFactory.createObjectNode().build(user).toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(expected));
     }
 
     /**
@@ -97,19 +98,17 @@ final class UserControllerTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/user_data.csv")
     void shouldValidateAndCreateUserProfileBasedOnCsvData(final String name, final String emailId, final String phoneNumber,
-                                  final String password, final String expectedStatus) {
+                                  final String password, final String expectedStatus) throws Exception {
         final User user = new User.UserBuilder().setName(name).setEmailId(emailId).setPhoneNumber(phoneNumber)
                 .setPassword(password).build();
+        final byte[] expected = jsonFactory.createObjectNode().put("status", expectedStatus).asBytes();
 
-        Mockito.when(userService.createUserProfile(user)).thenReturn(jsonFactory.createObjectNode()
-                .put(STATUS, expectedStatus).asBytes());
-        final byte[] result = userController.createUserProfile(user);
-        final JsonElement jsonElement = jsonFactory.asJsonArray(result);
+        Mockito.when(userService.createUserProfile(user)).thenReturn(expected);
 
-        if (jsonElement.hasElement(STATUS)) {
-            final String value = jsonElement.getValue(STATUS);
-
-            Assertions.assertEquals(expectedStatus, value);
-        }
+        mockMvc.perform(post("/user")
+                        .contentType("application/json")
+                        .content(jsonFactory.createObjectNode().build(user).toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(expected));
     }
 }

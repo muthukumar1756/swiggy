@@ -3,8 +3,10 @@ package org.foodhub.user.service.internal.impl;
 import java.util.Collection;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import org.foodhub.user.database.dao.UserDAO;
-import org.foodhub.user.database.dao.internal.impl.UserDAOImpl;
 import org.foodhub.user.model.address.Address;
 import org.foodhub.user.model.user.User;
 import org.foodhub.user.model.user.UserLoginDetails;
@@ -23,6 +25,7 @@ import org.foodhub.common.hibernate.validatorgroup.user.GetUserValidator;
 import org.foodhub.common.hibernate.validatorgroup.user.LoginUserValidator;
 import org.foodhub.common.hibernate.validatorgroup.user.CreateUserValidator;
 import org.foodhub.common.hibernate.validatorgroup.user.UpdateUserValidator;
+import org.foodhub.user.repository.UserRepository;
 
 /**
  * <p>
@@ -32,39 +35,21 @@ import org.foodhub.common.hibernate.validatorgroup.user.UpdateUserValidator;
  * @author Muthu kumar V
  * @version 1.0
  */
+@Service
 public final class UserServiceImpl implements UserService {
 
     private static final String STATUS = "status";
     private final JsonFactory jsonFactory;
     private final HibernateEntityValidator validatorFactory;
-    private UserDAO userDAO;
 
-    private UserServiceImpl() {
-        userDAO = UserDAOImpl.getInstance();
+    @Autowired
+    private UserRepository userRepository;
+
+    public UserServiceImpl() {
         jsonFactory = JsonFactory.getInstance();
         validatorFactory = HibernateEntityValidatorImpl.getInstance();
     }
 
-    /**
-     * <p>
-     * Creates the instance of the class
-     * </p>
-     */
-    private static class InstanceHolder {
-
-        private static final UserService USER_SERVICE = new UserServiceImpl();
-    }
-
-    /**
-     * <p>
-     * Gets the object of the user service implementation class.
-     * </p>
-     *
-     * @return The user service implementation class object
-     */
-    public static UserService getInstance() {
-        return InstanceHolder.USER_SERVICE;
-    }
 
     /**
      * {@inheritDoc}
@@ -78,11 +63,11 @@ public final class UserServiceImpl implements UserService {
 
         if (jsonObject.isEmpty()) {
 
-            if (userDAO.isUserExist(user.getPhoneNumber(), user.getEmailId())) {
+            if (userRepository.isUserExist(user.getPhoneNumber(), user.getEmailId())) {
                 return jsonObject.put(STATUS, "User is already exist").asBytes();
             }
 
-            return userDAO.createUserProfile(user) ?
+            return userRepository.createUserProfile(user) ?
                     jsonObject.put(STATUS, "User profile was created").asBytes() :
                     jsonObject.put(STATUS, "User profile creation failed").asBytes();
         }
@@ -104,9 +89,9 @@ public final class UserServiceImpl implements UserService {
             final String hashPassword = PasswordHashGenerator.getInstance().hashPassword(userLoginDetails.password());
 
             final Optional<User> user = switch (userLoginDetails.loginType()) {
-                case PHONE_NUMBER -> userDAO.getUser(UserProfileField.PHONE_NUMBER.name(),
+                case PHONE_NUMBER -> userRepository.getUser(UserProfileField.PHONE_NUMBER.name(),
                         userLoginDetails.phoneNumber(), hashPassword);
-                case EMAIL_ID -> userDAO.getUser(UserProfileField.EMAIL_ID.name(),
+                case EMAIL_ID -> userRepository.getUser(UserProfileField.EMAIL_ID.name(),
                         userLoginDetails.emailId(), hashPassword);
                 default -> Optional.empty();
             };
@@ -132,7 +117,7 @@ public final class UserServiceImpl implements UserService {
         final JsonObject jsonObject = validatorFactory.validate(userPojo, GetUserValidator.class);
 
         if (jsonObject.isEmpty()) {
-            final Optional<User> user = userDAO.getUserById(userId);
+            final Optional<User> user = userRepository.getUserById(userId);
 
             return user.isPresent() ? jsonObject.build(user.get()).asBytes() :
                     jsonObject.put(STATUS, "User not found").asBytes();
@@ -152,7 +137,7 @@ public final class UserServiceImpl implements UserService {
         final JsonObject jsonObject = validatorFactory.validate(address, PostAddressValidator.class);
 
         if (jsonObject.isEmpty()) {
-            return userDAO.addAddress(address) ? jsonObject.put(STATUS, "Address was added").asBytes() :
+            return userRepository.addAddress(address) ? jsonObject.put(STATUS, "Address was added").asBytes() :
                     jsonObject.put(STATUS, "Address adding failed").asBytes();
         }
 
@@ -172,7 +157,7 @@ public final class UserServiceImpl implements UserService {
         final JsonObject jsonObject = validatorFactory.validate(address, GetAddressValidator.class);
 
         if (jsonObject.isEmpty()) {
-            final Optional<Collection<Address>> addressList = userDAO.getAddress(userId);
+            final Optional<Collection<Address>> addressList = userRepository.getAddress(userId);
 
             return addressList.isPresent() ? jsonArray.build(addressList.get()).asBytes() :
                     jsonArray.add(jsonFactory.createObjectNode()
@@ -194,13 +179,13 @@ public final class UserServiceImpl implements UserService {
 
         if (jsonObject.isEmpty()) {
             final boolean updateStatus = switch (userProfileUpdateDetails.updateDataType()) {
-                case NAME -> userDAO.updateUserProfile(userProfileUpdateDetails.id(),
+                case NAME -> userRepository.updateUserProfile(userProfileUpdateDetails.id(),
                         UserProfileField.NAME.name(), userProfileUpdateDetails.name());
-                case PHONE_NUMBER -> userDAO.updateUserProfile(userProfileUpdateDetails.id(),
+                case PHONE_NUMBER -> userRepository.updateUserProfile(userProfileUpdateDetails.id(),
                         UserProfileField.PHONE_NUMBER.name(), userProfileUpdateDetails.phoneNumber());
-                case EMAIL_ID -> userDAO.updateUserProfile(userProfileUpdateDetails.id(),
+                case EMAIL_ID -> userRepository.updateUserProfile(userProfileUpdateDetails.id(),
                         UserProfileField.EMAIL_ID.name(), userProfileUpdateDetails.emailId());
-                case PASSWORD -> userDAO.updateUserProfile(userProfileUpdateDetails.id(),
+                case PASSWORD -> userRepository.updateUserProfile(userProfileUpdateDetails.id(),
                         UserProfileField.PASSWORD.name(), userProfileUpdateDetails.password());
             };
 
@@ -211,12 +196,8 @@ public final class UserServiceImpl implements UserService {
         return jsonObject.asBytes();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param userDAO The instance of user dao
-     */
-    public void setUserDAO(final UserDAO userDAO) {
-        this.userDAO = userDAO;
+    @Override
+    public void setUserDAO(UserDAO userDAO) {
+
     }
 }

@@ -1,15 +1,15 @@
 package org.foodhub.user.controller;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.POST;
-import javax.ws.rs.GET;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PathParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import org.foodhub.user.model.cart.Cart;
-import org.foodhub.user.service.internal.impl.CartServiceImpl;
 import org.foodhub.user.service.CartService;
 
 /**
@@ -20,35 +20,12 @@ import org.foodhub.user.service.CartService;
  * @author Muthu kumar V
  * @version 1.0
  */
-@Path("/cart")
+@RestController
+@RequestMapping("/cart")
 public final class CartController {
 
-    private final CartService cartService;
-
-    private CartController() {
-        cartService = CartServiceImpl.getInstance();
-    }
-
-    /**
-     * <p>
-     * Creates the instance of the class
-     * </p>
-     */
-    private static class InstanceHolder {
-
-        private static final CartController CART_CONTROLLER = new CartController();
-    }
-
-    /**
-     * <p>
-     * Gets the instance of the cart controller class.
-     * </p>
-     *
-     * @return The cart controller object
-     */
-    public static CartController getInstance() {
-        return InstanceHolder.CART_CONTROLLER;
-    }
+    @Autowired
+    private CartService cartService;
 
     /**
      * <p>
@@ -58,10 +35,8 @@ public final class CartController {
      * @param cart Represents the cart of the user
      * @return byte array of json object
      */
-    @POST
-    @Consumes("application/json")
-    @Produces("application/json")
-    public byte[] addFood(final Cart cart) {
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public byte[] addFood(@RequestBody final Cart cart) {
         return cartService.addFood(cart);
     }
 
@@ -73,10 +48,8 @@ public final class CartController {
      * @param userId Represents the id of the user
      * @return byte array of json object
      */
-    @Path("/{userId}")
-    @GET
-    @Produces("application/json")
-    public byte[] getCart(@PathParam("userId") final long userId) {
+    @GetMapping(value = "/{userId}", produces = "application/json")
+    public byte[] getCart(@PathVariable final long userId) {
         return cartService.getCart(userId);
     }
 
@@ -88,10 +61,8 @@ public final class CartController {
      * @param cartId Represents the id of the user cart
      * @return byte array of json object
      */
-    @Path("/{cartId}")
-    @DELETE
-    @Produces("application/json")
-    public byte[] removeFood(@PathParam("cartId") final long cartId) {
+    @DeleteMapping(value = "/{cartId}", produces = "application/json")
+    public byte[] removeFood(@PathVariable final long cartId) {
         return cartService.removeFood(cartId);
     }
 
@@ -103,10 +74,8 @@ public final class CartController {
      * @param userId Represents the id of the user
      * @return byte array of json object
      */
-    @Path("clear/{userId}")
-    @DELETE
-    @Produces("application/json")
-    public byte[] clearCart(@PathParam("userId") final long userId) {
+    @DeleteMapping(value = "/clear/{userId}", produces = "application/json")
+    public byte[] clearCart(@PathVariable final long userId) {
         return cartService.clearCart(userId);
     }
 }

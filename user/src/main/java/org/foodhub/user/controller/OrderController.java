@@ -2,16 +2,16 @@ package org.foodhub.user.controller;
 
 import java.util.Collection;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.POST;
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PathParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import org.foodhub.user.model.order.Order;
 import org.foodhub.user.service.OrderService;
-import org.foodhub.user.service.internal.impl.OrderServiceImpl;
 
 /**
  * <p>
@@ -21,35 +21,12 @@ import org.foodhub.user.service.internal.impl.OrderServiceImpl;
  * @author Muthu kumar V
  * @version 1.0
  */
-@Path("/order")
+@RestController
+@RequestMapping("/order")
 public final class OrderController {
 
-    private final OrderService orderService;
-
-    private OrderController() {
-        orderService = OrderServiceImpl.getInstance();
-    }
-
-    /**
-     * <p>
-     * Creates the instance of the class
-     * </p>
-     */
-    private static class InstanceHolder {
-
-        private static final OrderController ORDER_CONTROLLER = new OrderController();
-    }
-
-    /**
-     * <p>
-     * Gets the object of the cart controller class.
-     * </p>
-     *
-     * @return The cart controller object
-     */
-    public static OrderController getInstance() {
-        return InstanceHolder.ORDER_CONTROLLER;
-    }
+    @Autowired
+    private OrderService orderService;
 
     /**
      * <p>
@@ -59,10 +36,8 @@ public final class OrderController {
      * @param orderList Represents the list of order items
      * @return byte array of json response
      */
-    @POST
-    @Consumes("application/json")
-    @Produces("application/json")
-    public byte[] placeOrder(final Collection<Order> orderList) {
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public byte[] placeOrder(@RequestBody final Collection<Order> orderList) {
         return orderService.placeOrder(orderList);
     }
 
@@ -74,10 +49,8 @@ public final class OrderController {
      * @param userId Represents the id of the user
      * @return byte array of json response
      */
-    @Path("/{userId}")
-    @GET
-    @Produces("application/json")
-    public byte[] getOrders(@PathParam("userId") final long userId) {
+    @GetMapping(value = "/{userId}", produces = "application/json")
+    public byte[] getOrders(@PathVariable final long userId) {
         return orderService.getOrders(userId);
     }
 }

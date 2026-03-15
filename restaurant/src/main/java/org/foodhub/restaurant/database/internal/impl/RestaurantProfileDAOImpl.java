@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.springframework.stereotype.Repository;
+
 import org.foodhub.database.connection.DataBaseConnection;
 import org.foodhub.restaurant.database.dao.RestaurantProfileDAO;
 import org.foodhub.restaurant.database.persistenceservice.RestaurantProfilePersistenceService;
@@ -24,37 +26,17 @@ import org.foodhub.restaurant.model.restaurant.Restaurant;
  * @author Muthu kumar V
  * @version 1.0
  */
+@Repository
 public final class RestaurantProfileDAOImpl implements RestaurantProfileDAO {
 
     private final RestaurantProfilePersistenceService restaurantProfilePersistenceService;
     private final RestaurantProfileResultSetExtractor restaurantProfileResultSetExtractor;
     private final Connection connection;
 
-    private RestaurantProfileDAOImpl() {
+    public RestaurantProfileDAOImpl() {
         restaurantProfilePersistenceService = RestaurantProfilePersistenceService.getInstance();
         restaurantProfileResultSetExtractor = RestaurantProfileResultSetExtractor.getInstance();
         connection = DataBaseConnection.get();
-    }
-
-    /**
-     * <p>
-     * Creates the instance of the class
-     * </p>
-     */
-    private static class InstanceHolder {
-
-        private static final RestaurantProfileDAO RESTAURANT_PROFILE_DAO = new RestaurantProfileDAOImpl();
-    }
-
-    /**
-     * <p>
-     * Gets the object of the restaurant database implementation class.
-     * </p>
-     *
-     * @return The restaurant database service implementation object
-     */
-    public static RestaurantProfileDAO getInstance() {
-        return InstanceHolder.RESTAURANT_PROFILE_DAO;
     }
 
     /**

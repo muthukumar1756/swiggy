@@ -1,19 +1,19 @@
 package org.foodhub.user.controller;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.POST;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PathParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import org.foodhub.user.model.address.Address;
 import org.foodhub.user.model.user.User;
 import org.foodhub.user.model.user.UserLoginDetails;
 import org.foodhub.user.model.user.UserProfileUpdateDetails;
 import org.foodhub.user.service.UserService;
-import org.foodhub.user.service.internal.impl.UserServiceImpl;
 
 /**
  * <p>
@@ -23,46 +23,12 @@ import org.foodhub.user.service.internal.impl.UserServiceImpl;
  * @author Muthu kumar V
  * @version 1.0
  */
-@Path("/user")
+@RestController
+@RequestMapping("/user")
 public final class UserController {
 
+    @Autowired
     private UserService userService;
-
-    private UserController() {
-        userService = UserServiceImpl.getInstance();
-    }
-
-    /**
-     * <p>
-     * Creates the instance of the class
-     * </p>
-     */
-    private static class InstanceHolder {
-
-        private static final UserController USER_CONTROLLER = new UserController();
-    }
-
-    /**
-     * <p>
-     * Gets the instance of user service.
-     * </p>
-     *
-     * @return The user service object
-     */
-    public UserService getUserService() {
-        return userService;
-    }
-
-    /**
-     * <p>
-     * Gets the object of the user controller class.
-     * </p>
-     *
-     * @return The user controller response
-     */
-    public static UserController getInstance() {
-        return InstanceHolder.USER_CONTROLLER;
-    }
 
     /**
      * <p>
@@ -72,10 +38,8 @@ public final class UserController {
      * @param user Represents the user
      * @return byte array of json response
      */
-    @POST
-    @Consumes("application/json")
-    @Produces("application/json")
-    public byte[] createUserProfile(final User user) {
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public byte[] createUserProfile(@RequestBody final User user) {
         return userService.createUserProfile(user);
     }
 
@@ -87,11 +51,8 @@ public final class UserController {
      * @param userLoginDetails Represents the instance of user login dto
      * @return byte array of json response
      */
-    @Path("/login")
-    @POST
-    @Consumes("application/json")
-    @Produces("application/json")
-    public byte[] getUser(final UserLoginDetails userLoginDetails) {
+    @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
+    public byte[] getUser(@RequestBody final UserLoginDetails userLoginDetails) {
         return userService.getUser(userLoginDetails);
     }
 
@@ -103,10 +64,8 @@ public final class UserController {
      * @param userId Represents the password of the current user
      * @return byte array of json response
      */
-    @Path("/{userId}")
-    @GET
-    @Produces("application/json")
-    public byte[] getUserById(@PathParam("userId") final long userId) {
+    @GetMapping(value = "/{userId}", produces = "application/json")
+    public byte[] getUserById(@PathVariable final long userId) {
         return userService.getUserById(userId);
     }
 
@@ -118,11 +77,8 @@ public final class UserController {
      * @param address Represents the address of the user
      * @return byte array of json response
      */
-    @Path("/address")
-    @POST
-    @Consumes("application/json")
-    @Produces("application/json")
-    public byte[] addAddress(final Address address) {
+    @PostMapping(value = "/address", consumes = "application/json", produces = "application/json")
+    public byte[] addAddress(@RequestBody final Address address) {
         return userService.addAddress(address);
     }
 
@@ -134,10 +90,8 @@ public final class UserController {
      * @param userId Represents the id of the user
      * @return byte array of json response
      */
-    @Path("/address/{userId}")
-    @GET
-    @Produces("application/json")
-    public byte[] getAddress(@PathParam("userId") final long userId) {
+    @GetMapping(value = "/address/{userId}", produces = "application/json")
+    public byte[] getAddress(@PathVariable final long userId) {
         return userService.getAddress(userId);
     }
 
@@ -149,21 +103,8 @@ public final class UserController {
      * @param userProfileUpdateDetails Represents the instance of user profile update dto
      * @return byte array of json response
      */
-    @PUT
-    @Consumes("application/json")
-    @Produces("application/json")
-    public byte[] updateUserProfile(final UserProfileUpdateDetails userProfileUpdateDetails) {
+    @PutMapping(consumes = "application/json", produces = "application/json")
+    public byte[] updateUserProfile(@RequestBody final UserProfileUpdateDetails userProfileUpdateDetails) {
         return userService.updateUserProfile(userProfileUpdateDetails);
-    }
-
-    /**
-     * <p>
-     * Injects the mocked instance of user service.
-     * </p>
-     *
-     * @param userService The instance of user service
-     */
-    public void setUserService(final UserService userService) {
-        this.userService = userService;
     }
 }

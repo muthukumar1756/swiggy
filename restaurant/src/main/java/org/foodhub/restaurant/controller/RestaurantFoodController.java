@@ -1,15 +1,15 @@
 package org.foodhub.restaurant.controller;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.POST;
-import javax.ws.rs.GET;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PathParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import org.foodhub.restaurant.model.food.Food;
-import org.foodhub.restaurant.service.internal.impl.RestaurantFoodServiceImpl;
 import org.foodhub.restaurant.service.RestaurantFoodService;
 
 /**
@@ -20,35 +20,12 @@ import org.foodhub.restaurant.service.RestaurantFoodService;
  * @author Muthu kumar V
  * @version 1.0
  */
-@Path("/restaurant/food")
+@RestController
+@RequestMapping("/restaurant/food")
 public final class RestaurantFoodController {
 
-    private final RestaurantFoodService restaurantFoodService;
-
-    private RestaurantFoodController() {
-        restaurantFoodService = RestaurantFoodServiceImpl.getInstance();
-    }
-
-    /**
-     * <p>
-     * Creates the instance of the class
-     * </p>
-     */
-    private static class InstanceHolder {
-
-        private static final RestaurantFoodController RESTAURANT_FOOD_CONTROLLER = new RestaurantFoodController();
-    }
-
-    /**
-     * <p>
-     * Gets the instance of restaurant food controller.
-     * </p>
-     *
-     * @return The restaurant food controller object
-     */
-    public static RestaurantFoodController getInstance() {
-        return InstanceHolder.RESTAURANT_FOOD_CONTROLLER;
-    }
+    @Autowired
+    private RestaurantFoodService restaurantFoodService;
 
     /**
      * <p>
@@ -59,11 +36,8 @@ public final class RestaurantFoodController {
      * @param restaurantId Represents the ID of the restaurant.
      * @return A byte array containing the JSON response.
      */
-    @Path("/{restaurantId}")
-    @POST
-    @Consumes("application/json")
-    @Produces("application/json")
-    public byte[] addFood(final Food food, @PathParam("restaurantId") final long restaurantId) {
+    @PostMapping("/{restaurantId}")
+    public byte[] addFood(@RequestBody final Food food, @PathVariable final long restaurantId) {
         return restaurantFoodService.addFood(food, restaurantId);
     }
 
@@ -75,10 +49,8 @@ public final class RestaurantFoodController {
      * @param foodId Represents the ID of the food to be removed.
      * @return A byte array containing the JSON response.
      */
-    @Path("/{foodId}")
-    @DELETE
-    @Produces("application/json")
-    public byte[] removeFood(@PathParam("foodId") final long foodId) {
+    @DeleteMapping("/{foodId}")
+    public byte[] removeFood(@PathVariable final long foodId) {
         return restaurantFoodService.removeFood(foodId);
     }
 
@@ -90,10 +62,8 @@ public final class RestaurantFoodController {
      * @param foodId Represents the ID of the food.
      * @return A byte array containing the JSON response.
      */
-    @Path("/{foodId}")
-    @GET
-    @Produces("application/json")
-    public byte[] getFoodQuantity(@PathParam("foodId") final long foodId) {
+    @GetMapping("/{foodId}")
+    public byte[] getFoodQuantity(@PathVariable final long foodId) {
         return restaurantFoodService.getFoodQuantity(foodId);
     }
 
@@ -106,11 +76,9 @@ public final class RestaurantFoodController {
      * @param menucardId   Represents the ID of the menu card.
      * @return A byte array containing the JSON response.
      */
-    @Path("/{restaurantId}/{foodTypeId}")
-    @GET
-    @Produces("application/json")
-    public byte[] getMenuCard(@PathParam("restaurantId") final long restaurantId,
-                              @PathParam("foodTypeId") final int menucardId) {
-        return restaurantFoodService.getMenuCard(restaurantId, menucardId);
+    @GetMapping("/{restaurantId}/{foodTypeId}")
+    public byte[] getMenuCard(@PathVariable final long restaurantId,
+                              @PathVariable final int foodTypeId) {
+        return restaurantFoodService.getMenuCard(restaurantId, foodTypeId);
     }
 }

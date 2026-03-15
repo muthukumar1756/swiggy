@@ -11,20 +11,5 @@
     </parent>
 
     <artifactId>exception</artifactId>
-    <packaging>bundle</packaging>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>org.foodhub.exception.ExceptionActivator</Bundle-Activator>
-                        <Export-Package>org.foodhub.exception.*</Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <packaging>jar</packaging>
 </project>

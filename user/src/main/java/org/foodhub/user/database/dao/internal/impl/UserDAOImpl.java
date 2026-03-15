@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.springframework.stereotype.Repository;
+
 import org.foodhub.database.connection.DataBaseConnection;
 import org.foodhub.user.database.persistenceservice.UserPersistenceService;
 import org.foodhub.user.database.resultsetextractor.UserResultSetExtractor;
@@ -27,38 +29,19 @@ import org.foodhub.user.model.user.User;
  * @author Muthu kumar V
  * @version 1.0
  */
+@Repository
 public final class UserDAOImpl implements UserDAO {
 
     private final UserPersistenceService userPersistenceService;
     private final UserResultSetExtractor userResultSetExtractor;
     private final Connection connection;
 
-    private UserDAOImpl() {
+    public UserDAOImpl() {
         userPersistenceService = UserPersistenceService.getInstance();
         userResultSetExtractor = UserResultSetExtractor.getInstance();
         connection = DataBaseConnection.get();
     }
 
-    /**
-     * <p>
-     * Creates the instance of the class
-     * </p>
-     */
-    private static class InstanceHolder {
-
-        private static final UserDAO USER_DAO = new UserDAOImpl();
-    }
-
-    /**
-     * <p>
-     * Gets the instance of the user database implementation class.
-     * </p>
-     *
-     * @return The user database service implementation object
-     */
-    public static UserDAO getInstance() {
-        return InstanceHolder.USER_DAO;
-    }
 
     /**
      * {@inheritDoc}

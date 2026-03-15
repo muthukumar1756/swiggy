@@ -11,41 +11,64 @@
     </parent>
 
     <artifactId>server</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <dependencies>
 
         <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <scope>provided</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-            <scope>provided</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.foodhub</groupId>
             <artifactId>commons</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.foodhub</groupId>
             <artifactId>restaurant</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.foodhub</groupId>
             <artifactId>user</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.foodhub</groupId>
+            <artifactId>database</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.foodhub</groupId>
+            <artifactId>exception</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.foodhub</groupId>
+            <artifactId>swiggy-feature</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
 
     </dependencies>
@@ -53,14 +76,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>org.foodhub.launcher.Activator</Bundle-Activator>
-                        <Export-Package>org.foodhub.launcher.*</Export-Package>
-                    </instructions>
-                </configuration>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

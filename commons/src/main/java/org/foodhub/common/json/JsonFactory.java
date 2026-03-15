@@ -25,6 +25,10 @@ public final class JsonFactory {
     private JsonFactory() {
     }
 
+    public JsonElement asJsonObject(byte[] result) {
+        return null;
+    }
+
     /**
      * <p>
      * Creates the instance of the class

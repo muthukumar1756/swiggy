@@ -4,6 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+    </parent>
+
     <groupId>org.foodhub</groupId>
     <artifactId>swiggy</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -22,23 +28,28 @@
         <module>database</module>
         <module>commons</module>
         <module>exception</module>
-        <module>swiggy-feature</module>
     </modules>
 
     <dependencies>
 
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.22.0</version>
-            <scope>provided</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
-            <version>8.0.0</version>
-            <scope>provided</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
     </dependencies>
@@ -95,28 +106,8 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.9</version>
-                    <extensions>true</extensions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.karaf.tooling</groupId>
-                    <artifactId>karaf-maven-plugin</artifactId>
-                    <version>4.4.3</version>
-                    <extensions>true</extensions>
-                    <executions>
-                        <execution>
-                            <id>feature-generation</id>
-                            <phase>generate-resources</phase>
-                            <goals>
-                                <goal>features-generate-descriptor</goal>
-                            </goals>
-                            <configuration>
-                                <markTransitiveAsDependency>true</markTransitiveAsDependency>
-                            </configuration>
-                        </execution>
-                    </executions>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
                 </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>

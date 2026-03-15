@@ -3,9 +3,11 @@ package org.foodhub.restaurant.service.internal.impl;
 import java.util.Collection;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import org.foodhub.common.hibernate.HibernateEntityValidator;
 import org.foodhub.restaurant.database.dao.RestaurantFoodDAO;
-import org.foodhub.restaurant.database.internal.impl.RestaurantFoodDAOImpl;
 import org.foodhub.restaurant.model.food.Food;
 import org.foodhub.restaurant.model.restaurant.Restaurant;
 import org.foodhub.restaurant.service.RestaurantFoodService;
@@ -25,39 +27,21 @@ import org.foodhub.common.hibernate.validatorgroup.food.PostFoodValidator;
  * @author Muthu kumar V
  * @version 1.0
  */
+@Service
 public final class RestaurantFoodServiceImpl implements RestaurantFoodService {
 
     private static final String STATUS = "status";
     private final JsonFactory jsonFactory;
     private final HibernateEntityValidator validatorFactory;
-    private final RestaurantFoodDAO restaurantFoodDAO;
 
-    private RestaurantFoodServiceImpl() {
-        restaurantFoodDAO = RestaurantFoodDAOImpl.getInstance();
+    @Autowired
+    private RestaurantFoodDAO restaurantFoodDAO;
+
+    public RestaurantFoodServiceImpl() {
         jsonFactory = JsonFactory.getInstance();
         validatorFactory = HibernateEntityValidatorImpl.getInstance();
     }
 
-    /**
-     * <p>
-     * Creates the instance of the class
-     * </p>
-     */
-    private static class InstanceHolder {
-
-        private static final RestaurantFoodService RESTAURANT_FOOD_SERVICE = new RestaurantFoodServiceImpl();
-    }
-
-    /**
-     * <p>
-     * Gets the instance of restaurant food service implementation class.
-     * </p>
-     *
-     * @return The restaurant food service implementation object
-     */
-    public static RestaurantFoodService getInstance() {
-        return InstanceHolder.RESTAURANT_FOOD_SERVICE;
-    }
 
     /**
      * {@inheritDoc}

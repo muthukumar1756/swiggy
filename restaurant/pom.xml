@@ -11,63 +11,47 @@
     </parent>
 
     <artifactId>restaurant</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <dependencies>
 
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.foodhub</groupId>
             <artifactId>commons</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.foodhub</groupId>
             <artifactId>exception</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.foodhub</groupId>
             <artifactId>database</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>org.foodhub.restaurant.RestaurantActivator</Bundle-Activator>
-                        <Export-Package>org.foodhub.restaurant.*</Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

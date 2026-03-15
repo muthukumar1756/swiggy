@@ -1,11 +1,10 @@
 package org.foodhub.user.service;
 
+import org.foodhub.TestConfiguration;
 import org.foodhub.common.json.JsonElement;
 import org.foodhub.common.json.JsonFactory;
-import org.foodhub.user.database.dao.UserDAO;
-import org.foodhub.user.database.dao.internal.impl.UserDAOImpl;
 import org.foodhub.user.model.user.User;
-import org.foodhub.user.service.internal.impl.UserServiceImpl;
+import org.foodhub.user.repository.UserRepository;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,6 +13,11 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import org.mockito.Mockito;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Optional;
 
@@ -26,20 +30,19 @@ import java.util.Optional;
  * @author Muthu kumar V
  * @version 1.0
  */
+@SpringBootTest
+@ContextConfiguration(classes = TestConfiguration.class)
 class UserServiceTest {
 
     private static final String STATUS = "status";
-    private final UserService userService;
-    private final UserDAO userDAO;
-    private final JsonFactory jsonFactory;
 
-    public UserServiceTest() {
-        jsonFactory = JsonFactory.getInstance();
-        userService = UserServiceImpl.getInstance();
-        userDAO = Mockito.mock(UserDAOImpl.class);
+    @Autowired
+    private UserService userService;
 
-        userService.setUserDAO(userDAO);
-    }
+    @MockBean
+    private UserRepository userRepository;
+
+    private final JsonFactory jsonFactory = JsonFactory.getInstance();
 
     /**
      * <p>
@@ -51,9 +54,9 @@ class UserServiceTest {
     void shouldReturnCorrectUserDetailsForGivenUserIds(final long userId) {
         final User user = new User.UserBuilder().setId(userId).build();
 
-        Mockito.when(userDAO.getUserById(userId)).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.getUserById(userId)).thenReturn(Optional.of(user));
         final byte[] result = userService.getUserById(userId);
-        final JsonElement jsonElement = jsonFactory.asJsonArray(result);
+        final JsonElement jsonElement = jsonFactory.asJsonObject(result);
 
         if (jsonElement.hasElement("id")) {
             final String value = jsonElement.getValue("id");
@@ -76,13 +79,14 @@ class UserServiceTest {
             "Muthu kumar,muthukumar@gmail.com,9832178952,kumar,Enter a valid password"
     })
     void shouldValidateAndCreateUserProfileBasedOnInputData(final String name, final String emailId, final String phoneNumber,
-                                                            final String password, final String expectedStatus) {
+                                                             final String password, final String expectedStatus) {
         final User user = new User.UserBuilder().setName(name).setEmailId(emailId).setPhoneNumber(phoneNumber)
                 .setPassword(password).build();
 
-        Mockito.when(userDAO.createUserProfile(user)).thenReturn(true);
+        Mockito.when(userRepository.isUserExist(phoneNumber, emailId)).thenReturn(false);
+        Mockito.when(userRepository.createUserProfile(user)).thenReturn(true);
         final byte[] result = userService.createUserProfile(user);
-        final JsonElement jsonElement = jsonFactory.asJsonArray(result);
+        final JsonElement jsonElement = jsonFactory.asJsonObject(result);
 
         if (jsonElement.hasElement(STATUS)) {
             final String value = jsonElement.getValue(STATUS);
@@ -99,13 +103,14 @@ class UserServiceTest {
     @ParameterizedTest
     @CsvFileSource(resources = "/user_data.csv")
     void shouldValidateAndCreateUserProfileBasedOnCsvData(final String name, final String emailId, final String phoneNumber,
-                                                          final String password, final String expectedStatus) {
+                                                           final String password, final String expectedStatus) {
         final User user = new User.UserBuilder().setName(name).setEmailId(emailId).setPhoneNumber(phoneNumber)
                 .setPassword(password).build();
 
-        Mockito.when(userDAO.createUserProfile(user)).thenReturn(true);
+        Mockito.when(userRepository.isUserExist(phoneNumber, emailId)).thenReturn(false);
+        Mockito.when(userRepository.createUserProfile(user)).thenReturn(true);
         final byte[] result = userService.createUserProfile(user);
-        final JsonElement jsonElement = jsonFactory.asJsonArray(result);
+        final JsonElement jsonElement = jsonFactory.asJsonObject(result);
 
         if (jsonElement.hasElement(STATUS)) {
             final String value = jsonElement.getValue(STATUS);

@@ -3,9 +3,11 @@ package org.foodhub.restaurant.service.internal.impl;
 import java.util.Collection;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import org.foodhub.common.hibernate.HibernateEntityValidator;
 import org.foodhub.restaurant.database.dao.RestaurantProfileDAO;
-import org.foodhub.restaurant.database.internal.impl.RestaurantProfileDAOImpl;
 import org.foodhub.restaurant.model.restaurant.Restaurant;
 import org.foodhub.restaurant.model.restaurant.RestaurantLoginDetails;
 import org.foodhub.restaurant.model.restaurant.RestaurantProfileField;
@@ -29,38 +31,19 @@ import org.foodhub.common.hibernate.validatorgroup.Restaurant.UpdateRestaurantVa
  * @author Muthu kumar V
  * @version 1.0
  */
+@Service
 public final class RestaurantProfileServiceImpl implements RestaurantProfileService {
 
     private static final String STATUS = "status";
     private final JsonFactory jsonFactory;
     private final HibernateEntityValidator validatorFactory;
-    private final RestaurantProfileDAO restaurantProfileDAO;
 
-    private RestaurantProfileServiceImpl() {
-        restaurantProfileDAO = RestaurantProfileDAOImpl.getInstance();
+    @Autowired
+    private RestaurantProfileDAO restaurantProfileDAO;
+
+    public RestaurantProfileServiceImpl() {
         jsonFactory = JsonFactory.getInstance();
         validatorFactory = HibernateEntityValidatorImpl.getInstance();
-    }
-
-    /**
-     * <p>
-     * Creates the instance of the class
-     * </p>
-     */
-    private static class InstanceHolder {
-
-        private static final RestaurantProfileService RESTAURANT_PROFILE_SERVICE = new RestaurantProfileServiceImpl();
-    }
-
-    /**
-     * <p>
-     * Gets the restaurant service implementation object.
-     * </p>
-     *
-     * @return The restaurant service implementation object
-     */
-    public static RestaurantProfileService getInstance() {
-        return InstanceHolder.RESTAURANT_PROFILE_SERVICE;
     }
 
     /**

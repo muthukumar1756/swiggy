@@ -11,14 +11,13 @@
     </parent>
 
     <artifactId>commons</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <dependencies>
 
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -40,23 +39,7 @@
             <groupId>org.foodhub</groupId>
             <artifactId>exception</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>org.foodhub.common.CommonActivator</Bundle-Activator>
-                        <Export-Package>org.foodhub.common.*</Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
